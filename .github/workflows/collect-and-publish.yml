@@ -69,7 +69,7 @@ jobs:
         run: |
           mkdir -p publish
           cp site/index.html publish/index.html
-          cp site/.nojekyll publish/.nojekyll
+          touch publish/.nojekyll
 
       - name: Collect feed
         shell: bash
