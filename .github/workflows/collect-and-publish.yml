@@ -1,0 +1,159 @@
+name: Collect and publish betting feed
+
+on:
+  schedule:
+    # Feed principal: a cada 30 minutos.
+    - cron: '17,47 * * * *'
+    # Feed amplo: a cada 3 horas.
+    - cron: '7 */3 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Qual feed gerar agora?'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - 6h
+          - 24h
+          - both
+
+permissions:
+  contents: write
+
+concurrency:
+  group: csgoempire-feed-publish
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install collector dependencies
+        working-directory: collector
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium and Linux dependencies
+        working-directory: collector
+        run: |
+          npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+
+      - name: Decide collection mode
+        id: mode
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MODE="${{ inputs.mode }}"
+          elif [ "${{ github.event.schedule }}" = "7 */3 * * *" ]; then
+            MODE="24h"
+          else
+            MODE="6h"
+          fi
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "Modo selecionado: $MODE"
+
+      - name: Prepare publish directory
+        shell: bash
+        run: |
+          mkdir -p publish
+          cp site/index.html publish/index.html
+          cp site/.nojekyll publish/.nojekyll
+
+      - name: Collect feed
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          collect_feed() {
+            HOURS="$1"
+            OUTFILE="$2"
+            echo "Gerando ${HOURS}h -> ${OUTFILE}"
+
+            if node collector/index.js \
+              --headless \
+              --wait=25000 \
+              --hours="$HOURS" \
+              --out="$OUTFILE"; then
+              echo "Coleta headless concluída."
+              return 0
+            fi
+
+            echo "Headless falhou. Tentando Chromium headed dentro do Xvfb..."
+            xvfb-run -a node collector/index.js \
+              --wait=30000 \
+              --hours="$HOURS" \
+              --out="$OUTFILE"
+          }
+
+          MODE="${{ steps.mode.outputs.mode }}"
+
+          if [ "$MODE" = "6h" ] || [ "$MODE" = "both" ]; then
+            collect_feed 6 publish/latest-6h.json
+          fi
+
+          if [ "$MODE" = "24h" ] || [ "$MODE" = "both" ]; then
+            collect_feed 24 publish/latest-24h.json
+          fi
+
+      - name: Validate generated JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODE="${{ steps.mode.outputs.mode }}"
+          node - <<'NODE'
+          const fs = require('fs');
+          const mode = process.env.MODE;
+          const files = [];
+
+          if (mode === '6h' || mode === 'both') {
+            files.push('publish/latest-6h.json');
+          }
+
+          if (mode === '24h' || mode === 'both') {
+            files.push('publish/latest-24h.json');
+          }
+
+          for (const f of files) {
+            if (!fs.existsSync(f)) {
+              throw new Error(`Arquivo ausente: ${f}`);
+            }
+
+            const j = JSON.parse(fs.readFileSync(f, 'utf8'));
+
+            if (!j.generated_at_utc) {
+              throw new Error(`generated_at_utc ausente em ${f}`);
+            }
+
+            if (!j.totals) {
+              throw new Error(`totals ausente em ${f}`);
+            }
+
+            console.log(
+              `${f}: OK | generated_at_utc=${j.generated_at_utc} | all_events=${j.totals.all_events}`
+            );
+          }
+          NODE
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+
+      - name: Publish to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./publish
+          keep_files: true
+          enable_jekyll: false
+          commit_message: 'feed: update ${{ steps.mode.outputs.mode }}'
