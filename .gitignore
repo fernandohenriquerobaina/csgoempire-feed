@@ -1,0 +1,5 @@
+node_modules/
+collector/node_modules/
+publish/*.json
+*.log
+.DS_Store
