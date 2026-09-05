@@ -1,0 +1,165 @@
+{
+  "collector": "csgoempire-tennis-cs2-football-basketball-baseball",
+  "version": "1.5.1",
+  "generated_at_utc": "2026-09-05T10:28:38.961Z",
+  "source": {
+    "site": "CSGOEmpire Match Betting",
+    "provider_feed": "BETBY/sptpub prematch",
+    "brand_id": "2432911154364948480",
+    "api_origin": "https://api-h-c7818b61-608.sptpub.com",
+    "detail_fetch_strategy": "APIRequestContext with retry -> browser fetch fallback"
+  },
+  "filters": {
+    "only": "all",
+    "exclude_virtual": true,
+    "upcoming_only": true,
+    "hours_ahead": 24
+  },
+  "sport_ids": {
+    "tennis": "5",
+    "counter_strike": "109",
+    "football": "1",
+    "basketball": "2",
+    "baseball": "3"
+  },
+  "cs2_mapping_note": "CS2 mantém markets.raw completo para não perder nenhum mercado. Os cards normalizados são apenas os IDs já confirmados por comparação entre o endpoint e a interface do CSGOEmpire.",
+  "cs2_known_market_ids": {
+    "186": "Winner",
+    "327": "Map handicap",
+    "328": "Total maps",
+    "330": "Map winner",
+    "331": "Map round handicap",
+    "332": "Map total rounds",
+    "334": "Map 1x2 (excluding overtime)",
+    "50112": "Pistol round winner",
+    "50339": "Map winner & total rounds"
+  },
+  "football_mapping_note": "Futebol mantém os IDs crus de todos os mercados e normaliza os principais mercados confirmados por comparação entre o endpoint e a interface do CSGOEmpire. Use --include-raw para incluir o bloco raw completo, que pode deixar o JSON muito grande.",
+  "football_known_market_ids": {
+    "1": "1x2",
+    "8": "First team to score / Goal",
+    "10": "Double chance",
+    "11": "Draw no bet",
+    "16": "Handicap / Asian handicap",
+    "18": "Total goals",
+    "19": "Home team total",
+    "20": "Away team total",
+    "29": "Both teams to score",
+    "35": "1x2 & both teams to score",
+    "36": "Total & both teams to score",
+    "37": "1x2 & total",
+    "60": "1st half - 1x2",
+    "68": "1st half - total",
+    "162": "Corner 1x2",
+    "166": "Total corners",
+    "177": "1st half - total corners",
+    "562": "Both teams to score in both halves",
+    "50305": "Will be a penalty"
+  },
+  "basketball_mapping_note": "Basketball sport_id 2. A amostra El Calor de Cancun x Astros de Jalisco teve 25 IDs brutos e todos os 25 foram mapeados nesta versão. Mercados de outras ligas que usem IDs adicionais continuam listados em unmapped_market_ids.",
+  "basketball_known_market_ids": {
+    "1": "1x2",
+    "10": "Double chance",
+    "60": "1st half - 1x2",
+    "66": "1st half - handicap",
+    "68": "1st half - total",
+    "69": "1st half - home team total",
+    "70": "1st half - away team total",
+    "74": "1st half - odd/even",
+    "219": "Winner (incl. overtime)",
+    "220": "Will there be overtime",
+    "223": "Handicap (incl. overtime)",
+    "225": "Total (incl. overtime)",
+    "227": "Home team total (incl. overtime)",
+    "228": "Away team total (incl. overtime)",
+    "229": "Odd/even (incl. overtime)",
+    "235": "Quarter - 1x2",
+    "236": "Quarter - total",
+    "292": "Winner & total (incl. overtime)",
+    "303": "Quarter - handicap",
+    "304": "Quarter - odd/even",
+    "756": "Quarter - home team total",
+    "757": "Quarter - away team total",
+    "1175": "1st quarter - winner & total",
+    "1177": "1st half - winner & total",
+    "50010": "Quarter - race to points (3 way)"
+  },
+  "basketball_recognized_player_prop_ids": {
+    "768": "Player points - X+",
+    "770": "Player assists - X+",
+    "772": "Player rebounds - X+",
+    "774": "Player 3-point field goals - X+",
+    "921": "Player points - over/under",
+    "922": "Player assists - over/under",
+    "923": "Player rebounds - over/under",
+    "924": "Player 3-point field goals - over/under",
+    "50212": "Same game accumulators",
+    "50213": "Same game accumulators cross team",
+    "50266": "Player performance double",
+    "50267": "Player statistic double",
+    "50268": "Player statistic triple",
+    "50286": "Points + rebounds + assists - over/under",
+    "50287": "Points + rebounds + assists - X+",
+    "50288": "Rebounds + assists - X+"
+  },
+  "baseball_mapping_note": "Baseball sport_id 3. Os mercados principais foram confirmados com Los Angeles Angels x Cleveland Guardians (MLB). Player Props identificados ficam reconhecidos por ID, mas nomes de jogadores não são resolvidos pelo /event.",
+  "baseball_known_market_ids": {
+    "251": "Winner (incl. extra innings)",
+    "256": "Handicap (incl. extra innings)",
+    "258": "Total (incl. extra innings)",
+    "260": "Home team total (incl. extra innings)",
+    "261": "Away team total (incl. extra innings)",
+    "264": "Odd/even (incl. extra innings)",
+    "268": "Will there be an extra inning",
+    "274": "Innings 1 to 5 - 1x2",
+    "276": "Innings 1 to 5 - total",
+    "277": "Innings 1 to 5 - home team total",
+    "278": "Innings 1 to 5 - away team total",
+    "287": "Inning - 1x2",
+    "288": "Inning - total",
+    "50083": "Race to runs"
+  },
+  "baseball_recognized_player_prop_ids": {
+    "781": "Batter hits",
+    "782": "Batter home runs",
+    "785": "Batter total bases",
+    "925": "Pitcher strikeouts",
+    "50212": "Same game accumulators",
+    "50213": "Same game accumulators cross team",
+    "50266": "Player performance double",
+    "50267": "Player statistic double"
+  },
+  "totals": {
+    "tennis_events": 0,
+    "cs2_events": 0,
+    "football_events": 0,
+    "basketball_events": 0,
+    "baseball_events": 0,
+    "all_events": 0
+  },
+  "tennis": {
+    "sport_id": "5",
+    "event_count": 0,
+    "events": []
+  },
+  "cs2": {
+    "sport_id": "109",
+    "event_count": 0,
+    "events": []
+  },
+  "football": {
+    "sport_id": "1",
+    "event_count": 0,
+    "events": []
+  },
+  "basketball": {
+    "sport_id": "2",
+    "event_count": 0,
+    "events": []
+  },
+  "baseball": {
+    "sport_id": "3",
+    "event_count": 0,
+    "events": []
+  }
+}
